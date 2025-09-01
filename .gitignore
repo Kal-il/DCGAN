@@ -1,0 +1,10 @@
+# Ignore virtual environment folders
+.idea/
+*.iml
+venv/
+env/
+.venv/
+.env/
+
+# Ignore 102flower folder
+102flower/
