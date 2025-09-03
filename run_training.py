@@ -14,9 +14,9 @@ import config
 from utils import create_evolution_gif
 
 # --- Configurações do E-mail ---
-SENDER_EMAIL = 'kalilgarcia38@gmail.com'
-SENDER_PASSWORD = 'bceo hviz qdbw lnee'
-RECEIVER_EMAIL = 'kalilcanuto@gmail.com'  # Altere para o seu e-mailimport os
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL')
+SENDER_PASSWORD = os.environ.get('SENDER_PASSWORD')
+RECEIVER_EMAIL = os.environ.get('RECEIVER_EMAIL')
 
 # --- Configurações do Servidor SMTP (exemplo para o Gmail) ---
 SMTP_SERVER = 'smtp.gmail.com'
