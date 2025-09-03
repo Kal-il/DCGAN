@@ -1,6 +1,7 @@
-# tensorflow==2.16.*
+tensorflow
 numpy
 matplotlib
 ipython
 tensorflow-docs
+imageio
 

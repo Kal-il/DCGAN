@@ -7,4 +7,5 @@ env/
 .env/
 
 # Ignore 102flower folder
-102flower/
+102flowers/
+experiments/
