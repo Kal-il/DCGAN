@@ -6,7 +6,7 @@ EXPERIMENT_NAME = "teste_notebook" # para ver os experimentos ja feitos, veja a 
 # --- configurações do dataset e do treinamento ---
 EPOCHS = 10
 BATCH_SIZE = 128  # Conforme a secão de treinamento (4) do artigo
-BUFFER_SIZE = 6551 # tamanho do dataset de treino   (tamamnhop do dataset: 8189) (tamanho do tataset de validacao: 1638)
+BUFFER_SIZE = 6551 # tamanho do dataset de treino   (tamanho do dataset: 8189) (tamanho do dataset de validacao: 1638)
 
 # --- configuracoes do otimizador Adam ---
 LEARNING_RATE = 0.0002 # Conforme a seção de treinamento (4) do artigo
