@@ -1,0 +1,7 @@
+tensorflow
+numpy
+matplotlib
+ipython
+tensorflow-docs
+imageio
+
