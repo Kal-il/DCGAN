@@ -109,7 +109,7 @@ def train(dataset, epochs):
   utils.generate_and_save_images(model=generator, epoch=epochs, test_input=seed, directory=epochs_images_dir)
   
 
-# inicia o treinamento pra
+# inicia o treinamento para o modelo
 print("\nIniciando o treinamento...")
 train(train_dataset, config.EPOCHS)
 print("Treinamento concluído.")
