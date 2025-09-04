@@ -10,7 +10,8 @@ BUFFER_SIZE = 6551 # tamanho do dataset de treino   (tamamnhop do dataset: 8189)
 
 # --- configuracoes do otimizador Adam ---
 LEARNING_RATE_GENERATOR = 0.0002 # Conforme a seção de treinamento (4) do artigo
-LEARNING_RATE_DISCRIMINATOR = 0.0002 # Conforme a seção de treinamento (4) do artigo
+# LEARNING_RATE_DISCRIMINATOR = 0.0002 # Conforme a seção de treinamento (4) do artigo
+LEARNING_RATE_DISCRIMINATOR = 0.00015 # um ajuste menor para desacelarar o treinamento do discriminador só um pouco 
 ADAM_BETA_1 = 0.5    # Conforme a seção de treinamento (4) do artigo
 
 # --- configuracoes da arquitetura ---

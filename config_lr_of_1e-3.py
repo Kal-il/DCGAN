@@ -9,8 +9,8 @@ BATCH_SIZE = 128  # Conforme a secão de treinamento (4) do artigo
 BUFFER_SIZE = 6551 # tamanho do dataset de treino   (tamamnhop do dataset: 8189) (tamanho do tataset de validacao: 1638)
 
 # --- configuracoes do otimizador Adam ---
-LEARNING_RATE_GENERATOR = 0.0002 # Conforme a seção de treinamento (4) do artigo
-LEARNING_RATE_DISCRIMINATOR = 0.0002 # Conforme a seção de treinamento (4) do artigo
+LEARNING_RATE_GENERATOR = 0.001 # Taxa dreaprendizagem que os caras do artigo diseeram que é muito rápido e instavel
+LEARNING_RATE_DISCRIMINATOR = 0.001 # Taxa dreaprendizagem que os caras do artigo diseeram que é muito rápido e instavel
 ADAM_BETA_1 = 0.5    # Conforme a seção de treinamento (4) do artigo
 
 # --- configuracoes da arquitetura ---

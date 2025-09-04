@@ -4,7 +4,6 @@ import os
 import imageio
 import glob
 
-
 def generate_and_save_images(model, epoch, test_input, directory):
     predictions = model(test_input, training=False)
     fig = plt.figure(figsize=(4, 4))
