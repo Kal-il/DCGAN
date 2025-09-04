@@ -1,5 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras import layers
+import os
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 
 import config
 
@@ -11,17 +14,45 @@ def make_generator_model():
     """Cria o modelo do Gerador."""
     model = tf.keras.Sequential()
     model.add(
+        tf.keras.Input(shape=(config.NOISE_DIM,))
+    )
+    model.add(
         layers.Dense(
-            8*8*256,
+            4*4*1024,
             use_bias=False,
-            input_shape=(100,),
             kernel_initializer=weight_initializer
         )
     )
     model.add(layers.BatchNormalization())
     model.add(layers.ReLU())
 
-    model.add(layers.Reshape((8, 8, 256)))
+    model.add(layers.Reshape((4, 4, 1024)))
+
+    model.add(
+        layers.Conv2DTranspose(
+            512,
+            (5, 5),
+            strides=(2, 2),
+            padding='same',
+            use_bias=False,
+            kernel_initializer=weight_initializer
+        )
+    )
+    model.add(layers.BatchNormalization())
+    model.add(layers.ReLU()) # -> saida 8x8x512
+
+    model.add(
+        layers.Conv2DTranspose(
+            256,
+            (5, 5),
+            strides=(2, 2),
+            padding='same',
+            use_bias=False,
+            kernel_initializer=weight_initializer
+        )
+    )
+    model.add(layers.BatchNormalization())
+    model.add(layers.ReLU()) # -> saida 16x16x256
 
     model.add(
         layers.Conv2DTranspose(
@@ -34,20 +65,7 @@ def make_generator_model():
         )
     )
     model.add(layers.BatchNormalization())
-    model.add(layers.ReLU())
-
-    model.add(
-        layers.Conv2DTranspose(
-            64,
-            (5, 5),
-            strides=(2, 2),
-            padding='same',
-            use_bias=False,
-            kernel_initializer=weight_initializer
-        )
-    )
-    model.add(layers.BatchNormalization())
-    model.add(layers.ReLU())
+    model.add(layers.ReLU()) # -> saida 32x32x128
 
     model.add(
         layers.Conv2DTranspose(
@@ -59,7 +77,7 @@ def make_generator_model():
             activation='tanh',
             kernel_initializer=weight_initializer
         )
-    )
+    ) # -> saida 64x64x3
     # assert model.output_shape == (None, 64, 64, 3)
 
     return model
@@ -69,20 +87,22 @@ def make_generator_model():
 def make_discriminator_model():
     """Cria o modelo do Discriminador."""
     model = tf.keras.Sequential()
-    # Lembre-se de ajustar o input_shape para as dimensões da sua imagem de flor!
+    # Camada 1
+    model.add(
+        tf.keras.Input(shape=(config.IMAGE_HEIGHT, config.IMAGE_WIDTH, config.IMAGE_CHANNELS))
+    )
     model.add(
         layers.Conv2D(
             64,
             (5, 5),
             strides=(2, 2),
             padding='same',
-            input_shape=[64, 64, 3],
             kernel_initializer=weight_initializer
         )
     )
-    model.add(layers.LeakyReLU(alpha=config.LEAKY_RELU_ALPHA)) # slope of the leak was set to 0.2
+    model.add(layers.LeakyReLU(negative_slope=config.LEAKY_RELU_SLOPE)) # slope of the leak was set to 0.2
     model.add(layers.Dropout(0.3))
-
+    # Camada 2
     model.add(
         layers.Conv2D(
             128,
@@ -92,9 +112,33 @@ def make_discriminator_model():
             kernel_initializer=weight_initializer
         )
     )
-    model.add(layers.LeakyReLU(alpha=config.LEAKY_RELU_ALPHA))
+    model.add(layers.LeakyReLU(negative_slope=config.LEAKY_RELU_SLOPE))
     model.add(layers.Dropout(0.3))
-
+    # Camada 3
+    model.add(
+        layers.Conv2D(
+            256,
+            (5, 5),
+            strides=(2, 2),
+            padding='same',
+            kernel_initializer=weight_initializer
+        )
+    )
+    model.add(layers.LeakyReLU(negative_slope=config.LEAKY_RELU_SLOPE))
+    model.add(layers.Dropout(0.3))
+    # Camada 4 reduz pra 4x4x512
+    model.add(
+        layers.Conv2D(
+            512,
+            (5, 5),
+            strides=(2, 2),
+            padding='same',
+            kernel_initializer=weight_initializer
+        )
+    )
+    model.add(layers.LeakyReLU(negative_slope=config.LEAKY_RELU_SLOPE))
+    model.add(layers.Dropout(0.3))
+    # Camada final
     model.add(layers.Flatten())
     model.add(
         layers.Dense(
