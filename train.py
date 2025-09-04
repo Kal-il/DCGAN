@@ -7,6 +7,25 @@ import dataset
 import model
 import utils
 
+
+# --- INÍCIO DO BLOCO DE CONFIGURAÇÃO DE MEMÓRIA DA GPU ---
+# Coloque este bloco logo após suas importações
+
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+  try:
+    # Define um limite de memória virtual de 3GB (3 * 1024 = 3072 MB)
+    tf.config.set_logical_device_configuration(
+        gpus[0],
+        [tf.config.LogicalDeviceConfiguration(memory_limit=3072)])
+    logical_gpus = tf.config.list_logical_devices('GPU')
+    print(len(gpus), "GPUs Físicas,", len(logical_gpus), "GPUs Lógicas")
+  except RuntimeError as e:
+    # A configuração de dispositivos virtuais deve ser feita antes da GPU ser inicializada
+    print(e)
+# --- FIM DO BLOCO DE CONFIGURAÇÃO ---
+
+
 output_dir = os.path.join("experiments", config.EXPERIMENT_NAME)
 checkpoint_dir = os.path.join(output_dir, "checkpoints")
 log_file_path = os.path.join(output_dir, "training_log.csv")
@@ -31,20 +50,20 @@ print("Modelos construídos.")
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 def discriminator_loss(real_output, fake_output):
-    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
-    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+    real_loss = cross_entropy(tf.ones_like(real_output), real_output) # compara quantos verdadeiros ele deu pras imagens reais
+    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output) # compara quantos falsos ele deu pras imagens falsas
     total_loss = real_loss + fake_loss
     return total_loss
 
 def generator_loss(fake_output):
-    return cross_entropy(tf.ones_like(fake_output), fake_output)
+    return cross_entropy(tf.ones_like(fake_output), fake_output) # quer que o gerador engane o discriminador, ou seja, que ele ache que as imagens falsas sao reais
 
 #---------------------------------------------------------------------------------
 
 # otimizadores
 
-generator_optimizer = tf.keras.optimizers.Adam(learning_rate=config.LEARNING_RATE, beta_1=config.ADAM_BETA_1)
-discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=config.LEARNING_RATE, beta_1=config.ADAM_BETA_1)
+generator_optimizer = tf.keras.optimizers.Adam(learning_rate=config.LEARNING_RATE_GENERATOR, beta_1=config.ADAM_BETA_1)
+discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=config.LEARNING_RATE_DISCRIMINATOR, beta_1=config.ADAM_BETA_1)
 
 # checkpoints
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
@@ -109,7 +128,7 @@ def train(dataset, epochs):
   utils.generate_and_save_images(model=generator, epoch=epochs, test_input=seed, directory=epochs_images_dir)
   
 
-# inicia o treinamento para o modelo
+# inicia o treinamento pra
 print("\nIniciando o treinamento...")
 train(train_dataset, config.EPOCHS)
 print("Treinamento concluído.")
