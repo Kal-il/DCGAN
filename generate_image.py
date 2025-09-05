@@ -10,7 +10,8 @@ generator = model.make_generator_model()
 checkpoint = tf.train.Checkpoint(generator=generator)
 
 # caminho_do_checkpoint = "experiments/test_500_epochs/checkpoints/ckpt-43"
-caminho_do_checkpoint = "experiments/test_1000_epochs_4x4_base_64x64_gen_lr_adjusted/checkpoints/ckpt-9"
+# caminho_do_checkpoint = "experiments/test_1000_epochs_4x4_base_64x64_gen_lr_adjusted/checkpoints/ckpt-9"
+caminho_do_checkpoint = "experiments/test_2_1000_epochs_4x4_base_64x64_gen_lr_adjusted_to_0_00015/checkpoints/ckpt-9"
 
 checkpoint.restore(caminho_do_checkpoint).expect_partial()
 
