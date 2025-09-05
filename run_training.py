@@ -14,9 +14,9 @@ import config
 from utils import create_evolution_gif
 
 # --- Configurações do E-mail ---
-SENDER_EMAIL = os.environ.get('SENDER_EMAIL')
-SENDER_PASSWORD = os.environ.get('SENDER_PASSWORD')
-RECEIVER_EMAIL = os.environ.get('RECEIVER_EMAIL')
+SENDER_EMAIL = 'kalilgarcia38@gmail.com'
+SENDER_PASSWORD = 'bceo hviz qdbw lnee'
+RECEIVER_EMAIL = 'kalilcanuto@gmail.com'  # Altere para o seu e-mailimport os
 
 # --- Configurações do Servidor SMTP (exemplo para o Gmail) ---
 SMTP_SERVER = 'smtp.gmail.com'
@@ -31,7 +31,7 @@ epochs_images_dir = os.path.join(output_dir, "images")
 gif_path = os.path.join(output_dir, "training_evolution.gif")
 
 
-def send_notification_email(elapsed_time, error=None, attachment_path=None):  # NOVO: Adicionado attachment_path
+def send_notification_email(elapsed_time, attachment_path=None):  # NOVO: Adicionado attachment_path
     """
     Envia um e-mail notificando sobre o término do treinamento, com anexo opcional.
     """
@@ -47,24 +47,13 @@ def send_notification_email(elapsed_time, error=None, attachment_path=None):  # 
     message['From'] = SENDER_EMAIL
     message['To'] = RECEIVER_EMAIL
 
-    if error:
-        message['Subject'] = f"Falha no Treinamento: {config.EXPERIMENT_NAME}"
-        body = f"""
-        O script de treinamento `{SCRIPT_TO_RUN}` encontrou um erro.
-        <br><br>
-        <b>Tempo decorrido até a falha:</b> {time_str}
-        <br><br>
-        <b>Erro:</b>
-        <pre>{error}</pre>
-        """
-    else:
-        message['Subject'] = f"Treinamento Concluído: {config.EXPERIMENT_NAME}"
-        body = f"""
-        O script de treinamento `{SCRIPT_TO_RUN}` foi concluído com sucesso.
-        <br><br>
-        <b>Tempo total de execução:</b> {time_str}
-        <br><br>
-        O anexo contém a evolução do treinamento.
+    message['Subject'] = f"Treinamento Concluído: {config.EXPERIMENT_NAME}"
+    body = f"""
+    O script de treinamento `{SCRIPT_TO_RUN}` foi concluído com sucesso.
+    <br><br>
+    <b>Tempo total de execução:</b> {time_str}
+    <br><br>
+    O anexo contém a evolução do treinamento.
         """
 
     message.attach(MIMEText(body, 'html'))
@@ -94,52 +83,10 @@ def send_notification_email(elapsed_time, error=None, attachment_path=None):  # 
         print(f"!!! Falha ao enviar o e-mail: {e}")
 
 
-def run_script():
-    print(f"--- Iniciando a execução do script '{SCRIPT_TO_RUN}' ---")
-    start_time = time.time()
-    error_message = None
-    training_completed_successfully = False
+def generate_gif_and_send_email(elapsed_time):
+    attachment_to_send = None
+    create_evolution_gif(epochs_images_dir, gif_path)
+    if os.path.exists(gif_path):
+        attachment_to_send = gif_path
 
-    try:
-        result = subprocess.run(
-            ['python', SCRIPT_TO_RUN],
-            check=True,
-            capture_output=True,
-            text=True,
-            encoding='utf-8'  # NOVO: Garante a decodificação correta da saída
-        )
-        print("--- Script executado com sucesso ---")
-        print("\nSaída do Script:")
-        print(result.stdout)
-        training_completed_successfully = True
-
-    except FileNotFoundError:
-        error_message = f"Erro: O script '{SCRIPT_TO_RUN}' não foi encontrado."
-        print(error_message)
-    except subprocess.CalledProcessError as e:
-        error_message = f"O script '{SCRIPT_TO_RUN}' retornou um erro.\n\n"
-        error_message += f"Exit Code: {e.returncode}\n"
-        error_message += f"STDOUT:\n{e.stdout}\n"
-        error_message += f"STDERR:\n{e.stderr}\n"
-        print("--- O script falhou ---")
-        print(error_message)
-    except Exception as e:
-        error_message = f"Uma exceção inesperada ocorreu: {str(e)}"
-        print(error_message)
-    finally:
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"--- Execução finalizada em {elapsed_time:.2f} segundos ---")
-
-        attachment_to_send = None
-        if training_completed_successfully:
-            # NOVO: Chama a função para criar o GIF
-            create_evolution_gif(epochs_images_dir, gif_path)
-            if os.path.exists(gif_path):
-                attachment_to_send = gif_path
-
-        send_notification_email(elapsed_time, error=error_message, attachment_path=attachment_to_send)
-
-
-if __name__ == '__main__':
-    run_script()
+    send_notification_email(elapsed_time, attachment_path=attachment_to_send)

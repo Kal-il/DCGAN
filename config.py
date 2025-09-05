@@ -1,7 +1,7 @@
 # config.py
 
 # Nome do experimento para logs e checkpoints
-EXPERIMENT_NAME = "test_1000_epochs_4x4_base_64x64_gen_lr_adjusted" # para ver os experimentos ja feitos, veja a pasta experiments
+EXPERIMENT_NAME = "test_2_1000_epochs_4x4_base_64x64_gen_lr_adjusted" # para ver os experimentos ja feitos, veja a pasta experiments
 
 # --- configurações do dataset e do treinamento ---
 EPOCHS = 1000
@@ -10,7 +10,7 @@ BUFFER_SIZE = 6551 # tamanho do dataset de treino   (tamamnhop do dataset: 8189)
 
 # --- configuracoes do otimizador Adam ---
 LEARNING_RATE_GENERATOR = 0.0002 # Conforme a seção de treinamento (4) do artigo
-LEARNING_RATE_DISCRIMINATOR = 0.0001 # Conforme a seção de treinamento (4) do artigo
+LEARNING_RATE_DISCRIMINATOR = 0.0002 # Conforme a seção de treinamento (4) do artigo
 ADAM_BETA_1 = 0.5    # Conforme a seção de treinamento (4) do artigo
 
 # --- configuracoes da arquitetura ---

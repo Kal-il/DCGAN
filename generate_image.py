@@ -24,3 +24,4 @@ generated_image = generator(noise, training=False)
 utils.generate_image(generator, tf.random.normal([16, config.NOISE_DIM]))
 
 # utils.create_evolution_gif(image_folder='experiments/test_1000_epochs_4x4_base_64x64_gen_lr_adjusted/images', output_path="evolucao_treinamento.gif")
+
