@@ -4,26 +4,11 @@ import os
 from IPython import display
 import config
 import dataset
-import model
+# import model
+import model_128 as model
 import utils
+import run_training
 
-
-# --- INÍCIO DO BLOCO DE CONFIGURAÇÃO DE MEMÓRIA DA GPU ---
-# Coloque este bloco logo após suas importações
-
-gpus = tf.config.list_physical_devices('GPU')
-if gpus:
-  try:
-    # Define um limite de memória virtual de 3GB (3 * 1024 = 3072 MB)
-    tf.config.set_logical_device_configuration(
-        gpus[0],
-        [tf.config.LogicalDeviceConfiguration(memory_limit=3072)])
-    logical_gpus = tf.config.list_logical_devices('GPU')
-    print(len(gpus), "GPUs Físicas,", len(logical_gpus), "GPUs Lógicas")
-  except RuntimeError as e:
-    # A configuração de dispositivos virtuais deve ser feita antes da GPU ser inicializada
-    print(e)
-# --- FIM DO BLOCO DE CONFIGURAÇÃO ---
 
 
 output_dir = os.path.join("experiments", config.EXPERIMENT_NAME)
@@ -44,12 +29,12 @@ generator = model.make_generator_model()
 discriminator = model.make_discriminator_model()
 print("Modelos construídos.")
 
-# funcoes de perda e otimizacoes
 #---------------------------------------------------------------------------------
 
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 def discriminator_loss(real_output, fake_output):
+    # real_loss = cross_entropy(tf.ones_like(real_output) * 0.9, real_output) # compara quantos verdadeiros ele deu pras imagens reais
     real_loss = cross_entropy(tf.ones_like(real_output), real_output) # compara quantos verdadeiros ele deu pras imagens reais
     fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output) # compara quantos falsos ele deu pras imagens falsas
     total_loss = real_loss + fake_loss
@@ -76,6 +61,8 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
 @tf.function
 def train_step(images):
     noise = tf.random.normal([config.BATCH_SIZE, config.NOISE_DIM])
+    # noise_for_reals = tf.random.normal(shape=tf.shape(images), mean=0.0, stddev=0.05)
+    # real_images_noisy = images + noise_for_reals
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
       generated_images = generator(noise, training=True)
       real_output = discriminator(images, training=True)
@@ -88,7 +75,6 @@ def train_step(images):
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
     return gen_loss, disc_loss
 
-# loop de treinamento
 def train(dataset, epochs):
   # Cria a semente de ruído fixa para acompanhar o progresso
   seed = tf.random.normal([config.NUM_EXAMPLES_TO_GENERATE, config.NOISE_DIM])
@@ -128,7 +114,23 @@ def train(dataset, epochs):
   utils.generate_and_save_images(model=generator, epoch=epochs, test_input=seed, directory=epochs_images_dir)
   
 
-# inicia o treinamento pra
+
+# --- RESTAURAR CHECKPOINT (se existir) ---
+latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
+if latest_checkpoint:
+    print(f"Restaurando do checkpoint: {latest_checkpoint}")
+    checkpoint.restore(latest_checkpoint)
+    print("Checkpoint restaurado")
+else:
+    print("nenhum checkpoint encontrado. Iniciando treinamento do zero.")
+
+# --- INICIAR O TREINAMENTO ---
 print("\nIniciando o treinamento...")
+
+start_time = time.time()
+
 train(train_dataset, config.EPOCHS)
-print("Treinamento concluído.")
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+run_training.generate_gif_and_send_email(elapsed_time)

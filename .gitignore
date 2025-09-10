@@ -9,3 +9,8 @@ env/
 # Ignore 102flower folder
 102flowers/
 experiments/
+datasplits/
+single_images/
+fid_batches/
+logs/
+__pycache__/

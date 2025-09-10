@@ -1,7 +1,7 @@
 # config.py
 
 # Nome do experimento para logs e checkpoints
-EXPERIMENT_NAME = "test_2_1000_epochs_4x4_base_64x64_gen_lr_adjusted" # para ver os experimentos ja feitos, veja a pasta experiments
+EXPERIMENT_NAME = "test_colab_artigo_500" # para ver os experimentos ja feitos, veja a pasta experiments
 
 # --- configurações do dataset e do treinamento ---
 EPOCHS = 1000
@@ -19,8 +19,8 @@ WEIGHT_INIT_STDDEV = 0.02  # Desvio padrão para inicialização dos pesos
 NOISE_DIM = 100     # Tamanho do vetor de ruído (espaço latente) o mesmo usado no artigo original
 
 # --- Configurações do Modelo e da Imagem ---
-IMAGE_HEIGHT = 64   # Altura da imagem de flor (ex: 64x64)
-IMAGE_WIDTH = 64    # Largura da imagem de flor
+IMAGE_HEIGHT = 128   # Altura da imagem de flor (ex: 64x64)
+IMAGE_WIDTH = 128    # Largura da imagem de flor
 IMAGE_CHANNELS = 3  # 3 para imagens coloridas (RGB)
 
 # --- Configurações de Saída ---

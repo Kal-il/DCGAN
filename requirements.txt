@@ -4,4 +4,4 @@ matplotlib
 ipython
 tensorflow-docs
 imageio
-
+scikit-learn
